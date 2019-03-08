@@ -1,2 +1,2 @@
-# x86MessageEncryption
+# x86MessageDecryption
 Decoding strings encrypted by different cryptographic methods.
