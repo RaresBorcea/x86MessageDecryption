@@ -1,35 +1,53 @@
-============== Tema 2 IOCLA ==============
+(!) Pentru ințelegerea completă a implementării, se recomandă parcurgerea acestui document alături 
+de comentariile ce însoțesc codul.
 
-(!) Pentru ințelegerea completă a implementării, se recomandă parcurgerea acestui document alături de comentariile ce însoțesc codul.
-
-Deși există similitudini între cele 6 task-uri, referindu-ne la aspecte precum modul de parcurgere a șirului/cheii byte cu byte sau modul în care funcția este apelată în partea a doua a codului, fiecare task are elemente caracteristice, pe care le vom detalia mai jos.
+Deși există similitudini între cele 6 task-uri, referindu-ne la aspecte precum modul de parcurgere 
+a șirului/cheii byte cu byte sau modul în care funcția este apelată în partea a doua a codului, 
+fiecare task are elemente caracteristice, pe care le vom detalia mai jos.
 
 Task-ul 1
-În cadrul acestui task, fiecărui byte din șir i-a fost aplicată operația XOR cu fiecare byte din cheie. În cazul acestui task și al task-ului 3, a fost necesar să identificăm și poziția de început a cheii, prin căutarea terminatorului NULL al șirului cu „scasb”.
+În cadrul acestui task, fiecărui byte din șir i-a fost aplicată operația XOR cu fiecare byte din 
+cheie. În cazul acestui task și al task-ului 3, a fost necesar să identificăm și poziția de început 
+a cheii, prin căutarea terminatorului NULL al șirului cu „scasb”.
 
 Task-ul 2
-În acest caz, pentru decodificarea șirului, acesta a fost parcurs byte cu byte, byte-ul codificat/nemodificat anterior fiind folosit, prin XOR, pentru decodificarea byte-ului următor.
+În acest caz, pentru decodificarea șirului, acesta a fost parcurs byte cu byte, byte-ul 
+codificat/nemodificat anterior fiind folosit, prin XOR, pentru decodificarea byte-ului următor.
 Byte-ul din șirul inițial a fost păstrat în registrul „dl” pentru pasul următor.
 
 Task-ul 3
-A fost utilizată o funcție auxiliară, „hex_to_binary”, prin care șirul hex a fost transformat in-place în șir binar. 
-Ideea se bazează pe faptul că fiecare caracter HEX corespunde unui halfbyte, deci 2 caractere din șirul inițial formează un octet în șirul final.
-Practic, un octet din șirul final e corespondentul a doi octeți din cel inițial, fapt ce a determinat necesitatea unei reorganizări a șirului la fiecare pas, prim mutarea elementelor obținute până în prezent cu o poziție la dreapta.
+A fost utilizată o funcție auxiliară, „hex_to_binary”, prin care șirul hex a fost transformat 
+in-place în șir binar. 
+Ideea se bazează pe faptul că fiecare caracter HEX corespunde unui halfbyte, deci 2 caractere 
+din șirul inițial formează un octet în șirul final.
+Practic, un octet din șirul final e corespondentul a doi octeți din cel inițial, fapt ce a determinat 
+necesitatea unei reorganizări a șirului la fiecare pas, prim mutarea elementelor obținute până în 
+prezent cu o poziție la dreapta.
 Funcția „xor_hex_strings” poate, în urma conversiei, apela funcția de la task-ul 1 pentru finalizarea cerinței.
 
 Task-ul 4
-Primul pas în rezolvare a fost obținerea valorilor reale din spatele caracterelor, conform principiilor Base32.
-Egalul a fost înlocuit cu octetul zero, din codul literelor mari, care au coduri ASCII începând de la 65, s-a scăzut această valoare, iar din cifre, diferența dintre codul ASCII și codificarea Base32 a fost de 24.
+Primul pas în rezolvare a fost obținerea valorilor reale din spatele caracterelor, conform 
+principiilor Base32.
+Egalul a fost înlocuit cu octetul zero, din codul literelor mari, care au coduri ASCII 
+începând de la 65, s-a scăzut această valoare, iar din cifre, diferența dintre codul ASCII 
+și codificarea Base32 a fost de 24.
 Avem acum octeții corespunzători, din care dorim să păstrăm doar ultimii 5 biți.
-Identificăm astfel 5 cazuri de shiftări și OR-uri necesare obținerii octeților finali, cazuri care se repetă din 8 în 8 octeți ai șirului inițial.
-Fiecare octet din șirul final, va lucra cu 2 sau 3 octeți din șirul inițial pentru obținerea valorii corecte.
-Diferența dintre cele 5 cazuri a fost menținută printr-un contor în registrul „ebx” - după cazul 4, acesta a fost reinițializat cu zero pentru gruparea de 8 octeți următoare.
+Identificăm astfel 5 cazuri de shiftări și OR-uri necesare obținerii octeților finali, 
+cazuri care se repetă din 8 în 8 octeți ai șirului inițial.
+Fiecare octet din șirul final, va lucra cu 2 sau 3 octeți din șirul inițial pentru obținerea 
+valorii corecte.
+Diferența dintre cele 5 cazuri a fost menținută printr-un contor în registrul „ebx” - după 
+cazul 4, acesta a fost reinițializat cu zero pentru gruparea de 8 octeți următoare.
 
 Task-ul 5
 Metoda „buteforce” a constat în verificarea tuturor celor 256 de chei posibile între 0 - 255. 
-În momentul în care, în urma aplicării unei chei am putut identifica prezența în șir a string-ului „force”, căutarea a încetat, identificând astfel cheia și aplicând-o pe întregul șir pentru decodificare.
+În momentul în care, în urma aplicării unei chei am putut identifica prezența în șir a 
+string-ului „force”, căutarea a încetat, identificând astfel cheia și aplicând-o pe întregul 
+șir pentru decodificare.
 
 Task-ul 6
-Prin parcurgerea șirului byte cu byte și a cheii în mod repetat, am obținut diferența cu care s-au incrementat codurile ASCII din șirul inițial.
+Prin parcurgerea șirului byte cu byte și a cheii în mod repetat, am obținut diferența cu care 
+s-au incrementat codurile ASCII din șirul inițial.
 S-au analizat 2 cazuri: la codificare a existat o trecere peste literea „z” sau nu.
-Al doilea caz este mai dificil de analizat, fiind necesar să calcumăm cu câte poziții peste „z” se afla caracterul decodificat. Comentariile din cod explică detaliat pașii urmați.
+Al doilea caz este mai dificil de analizat, fiind necesar să calcumăm cu câte poziții peste 
+„z” se afla caracterul decodificat. Comentariile din cod explică detaliat pașii urmați.
