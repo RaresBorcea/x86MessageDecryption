@@ -17,7 +17,6 @@ section .text
 global main
 
 xor_strings:
-       ; TODO TASK 1
        push ebp
        mov ebp, esp
        
@@ -45,7 +44,6 @@ exit1:
        ret
 
 rolling_xor:
-       ; TODO TASK 2
        push ebp
        mov ebp, esp
        
@@ -125,7 +123,7 @@ move_bytes:
        ; peste pozitia primului din cele 2 caractere tocmai analizate
        dec edi
        test edi, edi
-       jz done3
+       jz exit3
        xor ebx, ebx
        mov ebx, edi
        dec ebx
@@ -133,7 +131,7 @@ move_bytes:
        mov al, byte[ecx + ebx]
        mov byte[ecx + edi], al
        jmp move_bytes
-done3:
+exit3:
        add ecx, 1
        mov dl, byte[ecx + esi]
        cmp dl, 0
@@ -141,8 +139,7 @@ done3:
        leave
        ret
 
-xor_hex_strings:    
-       ; TODO TASK 3
+xor_hex_strings:
        push ebp
        mov ebp, esp
        
@@ -170,7 +167,6 @@ xor_hex_strings:
        ret
 
 base32decode:
-       ; TODO TASK 4
        push ebp
        mov ebp, esp
        
@@ -183,7 +179,7 @@ base32decode:
 real_value:
        mov dl, byte[ecx + esi]
        cmp dl, 0
-       je done4
+       je real_obtained
        ; egalul e inlocuit cu octetul zero
        cmp dl, '='
        je egal
@@ -208,8 +204,7 @@ continue4:
        mov byte[ecx + esi], dl
        inc esi
        jmp real_value
-done4:
-       
+real_obtained:  
        xor esi, esi
        xor eax, eax
        xor ebx, ebx ; contor pentru cele 5 cazuri
@@ -299,8 +294,7 @@ exit4:
        leave
        ret
 
-bruteforce_singlebyte_xor:  
-       ; TODO TASK 5
+bruteforce_singlebyte_xor: 
        push ebp
        mov ebp, esp
        
@@ -312,7 +306,7 @@ bruteforce_singlebyte_xor:
        ; cheile de la 0 la 255 - un octet complet
 task5_loop:
        cmp bl, 255
-       ja done5
+       ja found5
        xor edi, edi
 find_force:
        ; caut pentru fiecare cheie aparitia cuvantului
@@ -325,32 +319,32 @@ find_force:
 continue:
        xor dl, bl
        cmp dl, 'f'
-       jne next5
+       jne increment5
        mov esi, edi
        inc esi
        mov dl, byte[ecx + esi]
        xor dl, bl
        cmp dl, 'o'
-       jne next5
+       jne increment5
        inc esi
        mov dl, byte[ecx + esi]
        xor dl, bl
        cmp dl, 'r'
-       jne next5
+       jne increment5
        inc esi
        mov dl, byte[ecx + esi]
        xor dl, bl
        cmp dl, 'c'
-       jne next5
+       jne increment5
        inc esi
        mov dl, byte[ecx + esi]
        xor dl, bl
        cmp dl, 'e'
-       je done5
-next5:
+       je found5
+increment5:
        inc edi
        jmp find_force
-done5:
+found5:
        ; cand il gasesc => cheie buna
        xor edi, edi
 decode5:
@@ -369,7 +363,6 @@ exit5:
        ret
 
 decode_vigenere:
-       ; TODO TASK 6
        push ebp
        mov ebp, esp
        
@@ -385,9 +378,9 @@ task6_loop:
        cmp dl, 0
        je exit6
        cmp dl, 'a'
-       jb next6
+       jb increment6
        cmp dl, 'z'
-       ja next6
+       ja increment6
        mov bl, byte[eax + esi]
        cmp bl, 0
        jne continue6
@@ -415,7 +408,7 @@ continue6:
        mov dl, al
        pop eax
        mov byte[ecx + edi], dl
-       jmp next6
+       jmp increment6
 depasire:
        ; daca nu, la codificare a existat o trecere peste Z
        mov bl, 'z'
@@ -427,7 +420,7 @@ depasire:
        mov dl, bl
        pop eax
        mov byte[ecx + edi], dl
-next6:
+increment6:
        inc edi
        jmp task6_loop     
 exit6:
@@ -435,7 +428,7 @@ exit6:
        ret
 
 main:
-        mov ebp, esp; for correct debugging
+       mov ebp, esp; for correct debugging
 	push ebp
 	mov ebp, esp
 	sub esp, 2300
@@ -503,9 +496,8 @@ main:
 	jmp task_done
 
 task1:
-       ; TASK 1: Simple XOR between two byte streams
-        
-       ; TODO TASK 1: find the address for the string and the key
+       ; Simple XOR between two byte streams
+
        ; inceputul cheii a fost identificat prin gasirea pozitiei
        ; caracterului terminator + 1
        mov ebx, ecx
@@ -516,7 +508,7 @@ task1:
        mov ecx, ebx
        sub edi, ecx
         
-       ; TODO TASK 1: call the xor_strings function
+       ; call the xor_strings function
        mov eax, ecx
        add eax, edi
        push eax
@@ -525,15 +517,16 @@ task1:
        add esp, 8
        
        push ecx
-       call puts                   ;print resulting string
+       ; print resulting string
+       call puts                   
        add esp, 4
 
        jmp task_done
 
 task2:
-       ; TASK 2: Rolling XOR
+       ; Rolling XOR
 
-       ; TODO TASK 2: call the rolling_xor function
+       ; call the rolling_xor function
        push ecx
        call rolling_xor
        add esp, 4
@@ -545,9 +538,9 @@ task2:
        jmp task_done
 
 task3:
-       ; TASK 3: XORing strings represented as hex strings
+       ; XORing strings represented as hex strings
 
-       ; TODO TASK 1: find the addresses of both strings
+       ; find the addresses of both strings
        mov ebx, ecx
        xor eax, eax
        mov al, 0
@@ -556,7 +549,7 @@ task3:
        mov ecx, ebx
        sub edi, ecx
        
-       ; TODO TASK 1: call the xor_hex_strings function
+       ; call the xor_hex_strings function
        mov eax, ecx
        add eax, edi
        push eax
@@ -564,53 +557,58 @@ task3:
        call xor_hex_strings
        add esp, 8
 
-       push ecx                     ;print resulting string
+       push ecx    
+       ; print resulting string                 
        call puts
        add esp, 4
 
        jmp task_done
 
 task4:
-       ; TASK 4: decoding a base32-encoded string
+       ; Decoding a base32-encoded string
 
-       ; TODO TASK 4: call the base32decode function
+       ; call the base32decode function
        push ecx
        call base32decode
        add esp, 4
 	
        push ecx
-       call puts                    ;print resulting string
+       ; print resulting string
+       call puts                    
        pop ecx
 	
        jmp task_done
 
 task5:
-       ; TASK 5: Find the single-byte key used in a XOR encoding
+       ; Find the single-byte key used in a XOR encoding
 
-       ; TODO TASK 5: call the bruteforce_singlebyte_xor function
+       ; call the bruteforce_singlebyte_xor function
        push ecx
        call bruteforce_singlebyte_xor
        add esp, 4
        
        
        push eax
-       push ecx                    ;print resulting string
+       push ecx        
+       ; print resulting string            
        call puts
        pop ecx
        
        pop eax
-       push eax                    ;eax = key value
+       ; eax = key value
+       push eax                    
        push fmtstr
-       call printf                 ;print key value
+       ; print key value
+       call printf                 
        add esp, 8
 
        jmp task_done
 
 task6:  
-       ; TASK 6: decode Vignere cipher
+       ; Decode Vignere cipher
 
-       ; TODO TASK 6: find the addresses for the input string and key
-       ; TODO TASK 6: call the decode_vigenere function
+       ; find the addresses for the input string and key
+       ; call the decode_vigenere function
        
        ; prima parte din task era deja rezolvata..
 	push ecx
@@ -621,7 +619,8 @@ task6:
 	inc eax
 
 	push eax
-	push ecx                   ;ecx = address of input string 
+       ; ecx = address of input string 
+	push ecx                   
 	call decode_vigenere
 	pop ecx
 	add esp, 4
