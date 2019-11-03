@@ -1,2 +1,2 @@
 # x86MessageDecryption
-Decoding strings encrypted by different cryptographic methods.
+Decodes strings encrypted using methods like base32 or Vigenère Cipher.
